@@ -1,0 +1,32 @@
+<div class="container">
+  <h1>ember-browser-info</h1>
+
+  <p>
+    This addon provides os and browser metrics but also looks up the user's IP address and then geographic information based on that IP address.
+  </p>
+  <p>
+    All information is provided via a service called "browser" which you will need to inject into your component/controller/route. The properties that hang off of that are:
+  </p>
+
+  <ul>
+    <li>{{ui-pill 'os'}} - the name of the browser's operating system</li>
+    <li>{{ui-pill 'browser'}} - the browser vendor, version number, etc.</li>
+    <li>{{ui-pill 'ip'}} - the IP address of the browser (note: you must call 'lookup()' to get this)</li>
+    <li>{{ui-pill 'geo'}} - based on IP address, gives you geographical info (also requires call to lookup())</li>
+  </ul>
+
+  <p>
+    If you're going to use IP or Geo features then you should call the <code>lookup()</code> method on the the <b>browser</b> service. This will return a Promise which is resolved when both IP and Geo are looked up.
+  </p>
+
+  <p>
+    Alternatively you can also refer to the {{ui-pill 'info'}} property which will call <code>lookup()</code> for you. It returns a hash of all the properties listed above but because "ip" and "geo" are asynchronously loaded you will not get them at <i>T0</i>.
+  </p>
+  <note>Note: the {{ui-pill 'info'}} property is what is displayed below</note>
+
+  <hr>
+
+  <pre><code>{{json browser.info}}</code></pre>
+
+  <hr>
+</div>

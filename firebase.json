@@ -1,0 +1,9 @@
+{
+  "firebase": "ember-browser-info",
+  "public": "dist",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}

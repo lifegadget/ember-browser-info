@@ -1,7 +1,7 @@
 {
   "name": "ember-browser-info",
-  "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "version": "0.1.0",
+  "description": "Get information about your user and browser, including vendor, version, ip address, and geo",
   "directories": {
     "doc": "doc",
     "test": "tests"
@@ -15,7 +15,7 @@
   "engines": {
     "node": ">= 0.10.0"
   },
-  "author": "",
+  "author": "git@github.com:lifegadget/ember-browser-info.git",
   "license": "MIT",
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.2",
@@ -29,6 +29,7 @@
     "ember-cli-jshint": "^1.0.0",
     "ember-cli-qunit": "^1.4.0",
     "ember-cli-release": "0.2.8",
+    "ember-cli-sass": "5.3.1",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^1.2.0",
     "ember-data": "^2.6.0-beta.1",
@@ -36,8 +37,8 @@
     "ember-export-application-global": "^1.0.5",
     "ember-load-initializers": "^0.5.1",
     "ember-resolver": "^2.0.3",
-    "ember-welcome-page": "^1.0.1",
-    "loader.js": "^4.0.1"
+    "loader.js": "^4.0.1",
+    "ui-bootstrap": "0.0.27"
   },
   "keywords": [
     "ember-addon"
@@ -46,6 +47,7 @@
     "ember-cli-babel": "^5.1.6"
   },
   "ember-addon": {
-    "configPath": "tests/dummy/config"
+    "configPath": "tests/dummy/config",
+    "demoURL": "https://ember-browser-info.firebaseapp.com"
   }
 }
