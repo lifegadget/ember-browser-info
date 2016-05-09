@@ -155,7 +155,7 @@ export default Ember.Service.extend({
     return new Promise((resolve, reject) => {
       this.getIpAddress().then(() => {
         $.ajax({
-          url: this.geoServiceUrl('ipinfo'),
+          url: this.geoServiceUrl(),
           method: 'GET'
         })
           .done(geo => {
@@ -171,13 +171,23 @@ export default Ember.Service.extend({
     });
   },
 
+  protocol: computed({
+    set(_, value) {
+      return value;
+    },
+    get() {
+      return window.location.protocol || 'https';
+    }
+  }),
+
   geoServiceUrl(service) {
     const ip = this.get('ip');
-    switch(service) {
+    const protocol = this.get('protocol');
+    switch(this.get('geoService')) {
       case 'ipinfo':
-        return `http://ipinfo.io/${ip}/json`;
+        return `${protocol}//ipinfo.io/${ip}/json`;
       case 'freegeoip':
-        return `http://freegeoip.net/json/${ip}`;
+        return `${protocol}//freegeoip.net/json/${ip}`;
     }
   }
 });

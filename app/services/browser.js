@@ -3,5 +3,5 @@ import ENV from '../config/environment';
 const config = ENV['ember-browser-info'] || {};
 
 export default browser.extend({
-  geoService: config.geoService || 'ipinfo',
+  geoService: config.geoService || 'freegeoip',
 });

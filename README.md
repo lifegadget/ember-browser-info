@@ -1,10 +1,6 @@
-# Ember-browser-info
+# ember-browser-info
+> OS, Browser, IP, and Geographic Info (based on IP)
 
-This README outlines the details of collaborating on this Ember addon.
-
-## Overview
-
-This addon provides os and browser metrics but also looks up the user's IP address and then geographic information based on that IP address.
 
 ## Install
 
@@ -17,9 +13,9 @@ ember install ember-browser-info
 No npm or bowser packages needed. It does leverage API's to get the browser IP address and geographical info:
 
 - **IP Address**: uses [`ipify.org`'s](http://ipify.org) API for looking up IP addresses
-- **Geo**: uses [IpInfo's](http://ipinfo.io) API by default but if can also use [FreeGeoIP's](http://freegeoip.net) if you'd prefer.
+- **Geo**: uses [FreeGeoIP's](http://freegeoip.net) by default (they provide free HTTP and HTTPS service); if you'd prefer to use [IpInfo's](http://ipinfo.io) API you can configure it by:
 
-  > To use **FreeGeoIP**, you'll need to set your the `ENV[ember-browser-info].geoService` property to "freegeoip" in your `environment.js` file.
+  > set your the `ENV[ember-browser-info].geoService` property to "ipinfo" in your `environment.js` file; note that the HTTPS service is a paid-only service (though HTTP is free)
 
 ## Demo
 
