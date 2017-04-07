@@ -67,7 +67,7 @@ export default Service.extend({
       return value;
     },
     get() {
-      return 'https';
+      return window.location.protocol || 'https:';
     }
   }),
 
