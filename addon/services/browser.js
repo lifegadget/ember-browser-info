@@ -1,36 +1,94 @@
 import Ember from 'ember';
+import fetch from 'ember-network/fetch';
 
-const { keys, create } = Object; // jshint ignore:line
-const { RSVP: {Promise} } = Ember; // jshint ignore:line
-const { inject: {service} } = Ember; // jshint ignore:line
-const { computed, observe, $, run, on, typeOf } = Ember;  // jshint ignore:line
-const { get, set, debug } = Ember; // jshint ignore:line
-const a = Ember.A; // jshint ignore:line
+const { Service, computed, run, RSVP: {Promise} } = Ember;
 const GET_IP = 'https://api.ipify.org?format=text';
 
-export default Ember.Service.extend({
+const parseFetch = ( response ) => {
+  if (response.headers.get('Content-Type') === 'application/json') {
+    return response.json();
+  }
+  return response.text();
+};
+
+export default Service.extend({
+  ip: null,
+  geo: null,
+
   lookup() {
-    return new Promise((resolve, reject) => {
-      this.getIpAddress()
-        .then(this.getGeoInfo())
-        .then(resolve)
-        .catch(reject);
-    });
+    return this.getIpAddress()
+      .then( () => { return this.getGeoInfo(); })
+      .then( () => { return this.get('info'); })
   },
-  info: computed('ip', 'geo', function() {
+
+  getIpAddress() {
+    const ip = this.get('ip');
+    if(ip) { return Promise.resolve(ip); }
+
+    return fetch( GET_IP )
+      .then( parseFetch )
+      .then( ip => { return this.set( 'ip', ip ); return ip; })
+      .catch( error => {
+        this.set( 'ip', 'unknown');
+        this.set( 'ipError', error);
+      });
+  },
+
+  getGeoInfo() {
+    const geo = this.get('geo');
+    if(geo) { return Promise.resolve(geo); }
+
+    return fetch( this.geoServiceUrl() )
+      .then( parseFetch )
+      .then( geo => { this.set( 'geo', geo ); return geo; })
+      .catch( error => {
+        this.set( 'geo', 'unknown' );
+        this.set( 'geoError', error );
+      });
+  },
+
+  geoServiceUrl( ) {
+    const ip = this.get('ip');
+    const protocol = this.get( 'protocol' );
+    const geoService = this.get( 'geoService' );
+
+    switch( geoService ) {
+      case 'ipinfo':
+        return `${protocol}//ipinfo.io/${ip}/json`;
+      case 'freegeoip':
+        return `${protocol}//freegeoip.net/json/${ip}`;
+      default:
+        return `${protocol}//freegeoip.net/json/${ip}`;
+    }
+  },
+
+  protocol: computed({
+    set(_, value) {
+      return value;
+    },
+    get() {
+      return window.location.protocol || 'https:';
+    }
+  }),
+
+  info: computed( 'ip', 'geo', function() {
     const {ip, geo, browser, os} = this.getProperties('ip', 'geo', 'browser', 'os');
+
     if(!ip) {
       run.scheduleOnce('afterRender', () => {
         this.lookup().catch(console.error);
       });
     }
+
     return {
       os: os,
       browser: browser,
       ip: ip || {error: 'unresolved', message: 'use the lookup() method to get ip and geo'},
       geo: geo || {error: 'unresolved', message: 'use the lookup() method to get ip and geo'},
     };
+
   }),
+
   os: computed(function() {
     const appVersion = window.navigator.appVersion;
     let os = "Unknown";
@@ -41,6 +99,7 @@ export default Ember.Service.extend({
 
     return os;
   }),
+
   browser: computed(function() {
     const nAgt = window.navigator.userAgent;
     let browserName  = window.navigator.appName;
@@ -119,75 +178,6 @@ export default Ember.Service.extend({
       appVersion: window.navigator.appVersion,
       userAgent: window.navigator.userAgent
     };
-  }),
-  ip: null,
-  geo: null,
+  })
 
-  getIpAddress() {
-    const ip = this.get('ip');
-    if(ip) {
-      return Promise.resolve(ip);
-    }
-
-    return new Promise((resolve, reject) => {
-      $.ajax({
-        url: GET_IP,
-        method: 'GET'
-      })
-        .done(ip => {
-          this.set('ip', ip);
-          resolve(ip);
-        })
-        .fail(error => {
-          this.set('ip', 'unknown');
-          this.set('ipError', error);
-          reject(error);
-        });
-    });
-  },
-
-  getGeoInfo() {
-    const geo = this.get('geo');
-    if(geo) {
-      return Promise.resolve(geo);
-    }
-
-    return new Promise((resolve, reject) => {
-      this.getIpAddress().then(() => {
-        $.ajax({
-          url: this.geoServiceUrl(),
-          method: 'GET'
-        })
-          .done(geo => {
-            this.set('geo', geo);
-            resolve(geo);
-          })
-          .fail(error => {
-            this.set('geo', 'unknown');
-            this.set('geoError', error);
-            reject(error);
-          });
-      }).catch(reject);
-    });
-  },
-
-  protocol: computed({
-    set(_, value) {
-      return value;
-    },
-    get() {
-      return window.location.protocol || 'https';
-    }
-  }),
-
-  geoServiceUrl(service) {
-    const ip = this.get('ip');
-    const protocol = this.get('protocol');
-    switch(this.get('geoService')) {
-      case 'ipinfo':
-        return `${protocol}//ipinfo.io/${ip}/json`;
-      case 'freegeoip':
-        return `${protocol}//freegeoip.net/json/${ip}`;
-    }
-  }
 });
